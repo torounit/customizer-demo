@@ -43,7 +43,7 @@ function customizer_demo_jumbotron_customize_register( WP_Customize_Manager $wp_
 	) );
 
 	/**
-	 * Register option.
+	 * Title.
 	 */
 	$wp_customize->add_setting( 'jumbotron_title', array(
 		'default' => 'Hello World!',
@@ -55,15 +55,10 @@ function customizer_demo_jumbotron_customize_register( WP_Customize_Manager $wp_
 		'label'   => __( 'Jumbotron Title', 'demo' ),
 	));
 
-	$wp_customize->selective_refresh->add_partial( 'jumbotron_title', array(
-		'selector'        => '.jumbotron h1',
-		'render_callback' => function() {
-			return get_theme_mod( 'jumbotron_title' );
-		},
-	) );
+
 
 	/**
-	 * Selective Reresh.
+	 * lead.
 	 */
 	$wp_customize->add_setting( 'jumbotron_lead', array(
 		'default' => 'It uses utility classes for typography and spacing to space content out within the larger container.',
@@ -76,6 +71,15 @@ function customizer_demo_jumbotron_customize_register( WP_Customize_Manager $wp_
 		'description' => __( 'Support Selective Refresh', 'demo' ),
 	));
 
+	/**
+	 * Support Selective Refresh.
+	 */
+	$wp_customize->selective_refresh->add_partial( 'jumbotron_lead', array(
+		'selector'        => '.jumbotron .lead',
+		'render_callback' => function() {
+			return get_theme_mod( 'jumbotron_lead' );
+		},
+	) );
 
 
 }
