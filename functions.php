@@ -13,22 +13,19 @@ function customizer_demo_scripts() {
 
 add_action( 'wp_enqueue_scripts', 'customizer_demo_scripts' );
 
-
-function fesdemo_customize_register( WP_Customize_Manager $wp_customize ) {
-	$wp_customize->get_setting( 'blogname' )->transport = 'postMessage';
-
-	$wp_customize->selective_refresh->add_partial( 'blogname', array(
-		'selector'        => '.navbar-brand',
-		'render_callback' => 'bloginfo',
-	) );
-
+/**
+ * Binds JS handlers to make Theme Customizer preview reload changes asynchronously.
+ */
+function customizer_demo_customize_preview_js() {
+	wp_enqueue_script( 'customizer-demo-customize-preview', get_template_directory_uri() . '/customize-preview.js', array( 'customize-preview' ), false, true );
 }
 
-add_action( 'customize_register', 'fesdemo_customize_register' );
+add_action( 'customize_preview_init', 'customizer_demo_customize_preview_js' );
+
 
 
 /**
- * Customizer Setting for Slider.
+ * Customizer Setting for Jumbotron.
  *
  * @param WP_Customize_Manager $wp_customize
  */
@@ -47,6 +44,7 @@ function customizer_demo_jumbotron_customize_register( WP_Customize_Manager $wp_
 	 */
 	$wp_customize->add_setting( 'jumbotron_title', array(
 		'default' => 'Hello World!',
+		'sanitize_callback' => 'esc_html',
 	));
 
 	/* Need after register setting. */
@@ -55,13 +53,12 @@ function customizer_demo_jumbotron_customize_register( WP_Customize_Manager $wp_
 		'label'   => __( 'Jumbotron Title', 'demo' ),
 	));
 
-
-
 	/**
 	 * lead.
 	 */
 	$wp_customize->add_setting( 'jumbotron_lead', array(
 		'default' => 'It uses utility classes for typography and spacing to space content out within the larger container.',
+		'sanitize_callback' => 'esc_html',
 		'transport'         => 'postMessage',
 	) );
 
@@ -80,8 +77,52 @@ function customizer_demo_jumbotron_customize_register( WP_Customize_Manager $wp_
 			return get_theme_mod( 'jumbotron_lead' );
 		},
 	) );
-
-
 }
 
 add_action( 'customize_register', 'customizer_demo_jumbotron_customize_register' );
+
+
+/**
+ * Support Selective Refresh for blogname.
+ *
+ * @param WP_Customize_Manager $wp_customize
+ */
+function fesdemo_customize_register( WP_Customize_Manager $wp_customize ) {
+	$wp_customize->get_setting( 'blogname' )->transport = 'postMessage';
+
+	$wp_customize->selective_refresh->add_partial( 'blogname', array(
+		'selector'        => '.navbar-brand',
+		'render_callback' => 'bloginfo',
+	) );
+}
+
+add_action( 'customize_register', 'fesdemo_customize_register' );
+
+
+function customizer_demo_navbar_customize_register( WP_Customize_Manager $wp_customize ) {
+	/**
+	 * Theme options.
+	 */
+	$wp_customize->add_section( 'navbar', array(
+		'title'    => __( 'Navbar', 'customizer-demo' ),
+	) );
+
+	$wp_customize->add_setting( 'navbar_bg', array(
+		'default'           => 'bg-primary',
+		'sanitize_callback' => 'esc_attr',
+		'transport'         => 'postMessage',
+	) );
+
+	$wp_customize->add_control( 'navbar_bg', array(
+		'label'       => __( 'Navbar Background', 'customizer-demo' ),
+		'section'     => 'navbar',
+		'type'        => 'radio',
+		'choices'     => array(
+			'bg-primary' => __( 'bg-primary', 'customizer-demo' ),
+			'bg-dark' => __( 'bg-dark', 'customizer-demo' ),
+		),
+
+	) );
+
+}
+add_action( 'customize_register', 'customizer_demo_navbar_customize_register' );
